@@ -1,0 +1,2 @@
+# This file is managed by Salt
+deb [arch=amd64] https://download.docker.com/linux/debian jessie stable

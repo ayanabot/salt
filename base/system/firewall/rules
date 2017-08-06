@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# This file is managed by Salt
+
+/sbin/iptables -F INPUT
+#/sbin/iptables -F OUTPUT # enable if output rules are added
+#/sbin/iptables -F FORWARD # enable if forward rules are added
+
+/sbin/iptables -I INPUT 1 -i lo -j ACCEPT
+/sbin/iptables -I INPUT 2 -i docker0 -j ACCEPT # accept local docker traffic
+/sbin/iptables -I INPUT 3 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+/sbin/iptables -I INPUT 4 -s 10.11.14.2 -j DROP # TEMP, will be overwritten by addsship
+
+# Failsafe
+[removed]
+
+# Ayana Network
+[removed]
+
+# DaVinchi Grafana
+[removed]
+
+# Cloudflare ips
+#/sbin/iptables -A INPUT -s 103.21.244.0/22 -j ACCEPT
+#/sbin/iptables -A INPUT -s 103.22.200.0/22 -j ACCEPT
+#/sbin/iptables -A INPUT -s 103.31.4.0/22 -j ACCEPT
+#/sbin/iptables -A INPUT -s 104.16.0.0/12 -j ACCEPT
+#/sbin/iptables -A INPUT -s 108.162.192.0/18 -j ACCEPT
+#/sbin/iptables -A INPUT -s 131.0.72.0/22 -j ACCEPT
+#/sbin/iptables -A INPUT -s 141.101.64.0/18 -j ACCEPT
+#/sbin/iptables -A INPUT -s 162.158.0.0/15 -j ACCEPT
+#/sbin/iptables -A INPUT -s 172.64.0.0/13 -j ACCEPT
+#/sbin/iptables -A INPUT -s 173.245.48.0/20 -j ACCEPT
+#/sbin/iptables -A INPUT -s 188.114.96.0/20 -j ACCEPT
+#/sbin/iptables -A INPUT -s 190.93.240.0/20 -j ACCEPT
+#/sbin/iptables -A INPUT -s 197.234.240.0/22 -j ACCEPT
+#/sbin/iptables -A INPUT -s 198.41.128.0/17 -j ACCEPT
+#/sbin/iptables -A INPUT -s 199.27.128.0/21 -j ACCEPT
+
+# PORT 80, ACCEPT all NEW packets (websites)
+/sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
+
+# PORT 443, ACCEPT all NEW packets (websites ssl)
+/sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
+
+# LOG
+#/sbin/iptables -A INPUT -m limit --limit 2/min -j LOG --log-prefix "IPTables Packet Dropped: " --log-level info
+
+/sbin/iptables -P INPUT DROP
+/sbin/iptables -P FORWARD ACCEPT
+/sbin/iptables -P OUTPUT ACCEPT
+
+/sbin/iptables -L -v
+
+/sbin/iptables-save
